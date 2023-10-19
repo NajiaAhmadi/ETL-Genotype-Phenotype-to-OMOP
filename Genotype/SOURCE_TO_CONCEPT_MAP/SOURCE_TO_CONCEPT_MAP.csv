@@ -1,0 +1,10 @@
+﻿source_code;source_concept_id;source_vocabulary_id;source_code_description;target_concept_id;target_vocabulary_id;valid_start_date;valid_end_date;invalid_reason
+female;0;Gender;Female;8532;Gender;2000-01-01;2099-12-31;
+male;0;Gender;Male;8507;Gender;2000-01-01;2099-12-31;
+other;0;Gender;Other;0;None;2000-01-01;2099-12-31;
+unknown;0;Gender;Unknown;4214687;SNOMED;2000-01-01;2099-12-31;
+X;0;Gender;unbestimmt;4215271;SNOMED;2000-01-01;2099-12-31;
+D;0;Gender;divers;0;None;2000-01-01;2099-12-31;
+not_detected;0;Fever;not_detected;0;None;2000-01-01;2099-12-31;
+detected;0;Fever;detected;437663;SNOMED;2000-01-01;2099-12-31;
+Gpt/l;0;WBC;WBCU ;0;None;2000-01-01;2099-12-31;
