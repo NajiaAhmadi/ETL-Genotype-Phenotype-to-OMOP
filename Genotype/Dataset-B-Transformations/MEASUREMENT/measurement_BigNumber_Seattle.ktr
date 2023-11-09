@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>observation_BigNumber</name>
+    <name>measurement_BigNumber_Seattle</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -428,23 +428,52 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2023/02/14 08:49:05.803</created_date>
+    <created_date>2023/03/07 11:36:10.266</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2023/02/14 08:49:05.803</modified_date>
+    <modified_date>2023/03/07 11:36:10.266</modified_date>
     <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
+    <notepad>
+      <note>WBC_(x10^3/MicroLiter)_levels -> bignumber -> Not applicable 
+
+Bone_marrow_leukemic_blast_percentage_(%) ->integrar- Not applicable
+
+Peripheral_blasts_(%) -> bignumber -> Not applicable 
+FLT3/ITD_allelic_ratio -> string
+
+
+</note>
+      <xloc>32</xloc>
+      <yloc>144</yloc>
+      <width>458</width>
+      <heigth>154</heigth>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
   </notepads>
   <connection>
-    <name>AML_OMOP</name>
-    <server>sv-diz-aml.med.tu-dresden.de</server>
+    <name>ohdsi</name>
+    <server>${DATABASE_IP}</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>ohdsi</database>
-    <port>5432</port>
-    <username>ohdsi_admin_user</username>
-    <password>Encrypted 446b6e465176565072666a4a35708da9e1b85a93a882aa108c518f8581eb</password>
+    <database>${DATABASE_NAME}</database>
+    <port>${DATABASE_PORT}</port>
+    <username>${DATABASE_USER}</username>
+    <password>${DATABASE_PASSWORD}</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -463,7 +492,7 @@
       </attribute>
       <attribute>
         <code>PORT_NUMBER</code>
-        <attribute>5432</attribute>
+        <attribute>${DATABASE_PORT}</attribute>
       </attribute>
       <attribute>
         <code>PRESERVE_RESERVED_WORD_CASE</code>
@@ -489,33 +518,18 @@
   </connection>
   <order>
     <hop>
-      <from>Sort rows</from>
-      <to>Row normaliser</to>
+      <from>Value mapper - FLOW-unit_source_value</from>
+      <to>Value mapper - FLOW-unit_source_value-full-form</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Row normaliser</from>
-      <to>Value mapper - FLOW-unit_source_value</to>
+      <from>Value mapper - FLOW-unit_source_value-full-form</from>
+      <to>Add constants</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select values - same order as database</from>
-      <to>Write to OMOP</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Table input - FLOW-observation_concept_id</from>
-      <to>Stream lookup - FLOW-observation_concept_id</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Table input - FLOW-unit_concept_id</from>
+      <from>Filter rows 1</from>
       <to>Stream lookup - FLOW-unit_concept_id</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Stream lookup - FLOW-observation_concept_id</from>
-      <to>Filter rows 1</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -524,13 +538,18 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Filter rows 1</from>
-      <to>Stream lookup - FLOW-unit_concept_id</to>
+      <from>Filter rows 2</from>
+      <to>Select values - same order as database</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Table input - Person_Id</from>
-      <to>Stream lookup - Person_Id</to>
+      <from>Filter rows 2</from>
+      <to>Write to log 3</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Stream lookup - FLOW-measurement_concept_id</from>
+      <to>Filter rows 1</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -544,43 +563,73 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Filter rows 2</from>
-      <to>Write to log 3</to>
+      <from>Table input - Person</from>
+      <to>Stream lookup - Person_Id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Filter rows 2</from>
-      <to>Select values - same order as database</to>
+      <from>Table input - concept 1</from>
+      <to>Stream lookup - FLOW-measurement_concept_id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Filter rows - null entries</from>
-      <to>Sort rows</to>
+      <from>Table input - concept 2</from>
+      <to>Stream lookup - FLOW-unit_concept_id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Value mapper - FLOW-unit_source_value</from>
-      <to>Add constants</to>
+      <from>filter out &lt;0.1</from>
+      <to>Stream lookup - FLOW-measurement_concept_id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Add constants</from>
-      <to>Stream lookup - FLOW-observation_concept_id</to>
+      <from>Select values - same order as database</from>
+      <to>Write to OMOP</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>filter out &lt;0.1</from>
+      <to>fill in &lt;0.1</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Value mapper</from>
+      <to>remove &lt;0.1 in number</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Select values - measurement</from>
+      <to>Row normaliser - FLOW-measurement_source_value</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>remove &lt;0.1 in number</from>
+      <to>Stream lookup - FLOW-measurement_concept_id</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>fill in &lt;0.1</from>
+      <to>Value mapper</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>Input AML Data</from>
-      <to>Value mapper - date_of_diagnosis</to>
+      <to>Select values - measurement</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Value mapper - date_of_diagnosis</from>
-      <to>Select values - observation</to>
+      <from>Row normaliser - FLOW-measurement_source_value</from>
+      <to>Filter rows - Not applicable</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select values - observation</from>
-      <to>Filter rows - null entries</to>
+      <from>Filter rows - Not applicable</from>
+      <to>Value mapper - FLOW-unit_source_value</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Add constants</from>
+      <to>filter out &lt;0.1</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -597,7 +646,7 @@
     </partitioning>
     <fields>
       <field>
-        <name>FLOW-observation_type_concept_id</name>
+        <name>FLOW-measurement_type_concept_id</name>
         <type>Integer</type>
         <format/>
         <currency/>
@@ -606,6 +655,30 @@
         <nullif>32817</nullif>
         <length>-1</length>
         <precision>0</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>FLOW-measurement_date</name>
+        <type>Date</type>
+        <format>yyyy-MM-dd</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>1800-01-01</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>Flow-value_as_string</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
       </field>
     </fields>
@@ -618,13 +691,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1360</xloc>
-      <yloc>112</yloc>
+      <xloc>976</xloc>
+      <yloc>224</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Filter rows - null entries</name>
+    <name>Filter rows - Not applicable</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -634,7 +707,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <send_true_to>Sort rows</send_true_to>
+    <send_true_to>Value mapper - FLOW-unit_source_value</send_true_to>
     <send_false_to/>
     <compare>
       <condition>
@@ -642,81 +715,33 @@
         <conditions>
           <condition>
             <negated>Y</negated>
-            <leftvalue>﻿Pat</leftvalue>
+            <leftvalue>FLOW-vlaue_as_number</leftvalue>
             <function>=</function>
             <rightvalue/>
             <value>
               <name>constant</name>
               <type>String</type>
-              <text/>
+              <text>Not applicable</text>
               <length>-1</length>
               <precision>-1</precision>
-              <isnull>Y</isnull>
+              <isnull>N</isnull>
               <mask/>
             </value>
           </condition>
           <condition>
             <negated>Y</negated>
             <operator>AND</operator>
-            <leftvalue>Hemoglobin</leftvalue>
+            <leftvalue>FLOW-vlaue_as_number</leftvalue>
             <function>=</function>
             <rightvalue/>
             <value>
               <name>constant</name>
-              <type>Number</type>
-              <text/>
+              <type>String</type>
+              <text>Unknown</text>
               <length>-1</length>
               <precision>-1</precision>
-              <isnull>Y</isnull>
-              <mask>####0.0#########;-####0.0#########</mask>
-            </value>
-          </condition>
-          <condition>
-            <negated>Y</negated>
-            <operator>AND</operator>
-            <leftvalue>Survival time</leftvalue>
-            <function>=</function>
-            <rightvalue/>
-            <value>
-              <name>constant</name>
-              <type>Number</type>
-              <text/>
-              <length>-1</length>
-              <precision>-1</precision>
-              <isnull>Y</isnull>
-              <mask>####0.0#########;-####0.0#########</mask>
-            </value>
-          </condition>
-          <condition>
-            <negated>Y</negated>
-            <operator>AND</operator>
-            <leftvalue>Time of event</leftvalue>
-            <function>=</function>
-            <rightvalue/>
-            <value>
-              <name>constant</name>
-              <type>BigNumber</type>
-              <text/>
-              <length>-1</length>
-              <precision>-1</precision>
-              <isnull>Y</isnull>
-              <mask>######0.0###################;-######0.0###################</mask>
-            </value>
-          </condition>
-          <condition>
-            <negated>Y</negated>
-            <operator>AND</operator>
-            <leftvalue>Duration of recurrence-free survival</leftvalue>
-            <function>=</function>
-            <rightvalue/>
-            <value>
-              <name>constant</name>
-              <type>BigNumber</type>
-              <text/>
-              <length>-1</length>
-              <precision>-1</precision>
-              <isnull>Y</isnull>
-              <mask>######0.0###################;-######0.0###################</mask>
+              <isnull>N</isnull>
+              <mask/>
             </value>
           </condition>
         </conditions>
@@ -731,8 +756,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>608</xloc>
-      <yloc>16</yloc>
+      <xloc>736</xloc>
+      <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -752,7 +777,7 @@
     <compare>
       <condition>
         <negated>N</negated>
-        <leftvalue>FLOW-observation_concept_id</leftvalue>
+        <leftvalue>FLOW-measurement_concept_id</leftvalue>
         <function>IS NOT NULL</function>
         <rightvalue/>
       </condition>
@@ -766,8 +791,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1088</xloc>
-      <yloc>320</yloc>
+      <xloc>720</xloc>
+      <yloc>688</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -801,8 +826,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1088</xloc>
-      <yloc>480</yloc>
+      <xloc>720</xloc>
+      <yloc>832</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -821,7 +846,7 @@
     <passing_through_fields>N</passing_through_fields>
     <accept_field/>
     <accept_stepname/>
-    <separator>;</separator>
+    <separator>,</separator>
     <enclosure>"</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
     <escapechar/>
@@ -845,12 +870,7 @@
     <length>Characters</length>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>/Users/ahmadinai/Desktop/AML/Dresden Study Alliance Leukemia AML(111 elements).csv</name>
-      <filemask/>
-      <exclude_filemask/>
-      <file_required>N</file_required>
-      <include_subfolders>N</include_subfolders>
-      <name/>
+      <name>${User/Transformations-folder/}Dataset-B</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -867,172 +887,7 @@
     </filters>
     <fields>
       <field>
-        <name>﻿Pat</name>
-        <type>String</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>16</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>TIDTC_(date_of_Diagnosis)</name>
-        <type>None</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>8</length>
-        <precision>2</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>AGE</name>
-        <type>String</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>SEX</name>
-        <type>String</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>Sex_male</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>sex_female</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>FEV</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>EXAML</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>WBC</name>
-        <type>Number</type>
-        <format>0.00</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>WBCU</name>
-        <type>String</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>5</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>HB</name>
-        <type>Number</type>
-        <format>#.#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>HBU</name>
+        <name>USI</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1047,22 +902,22 @@
         <repeat>N</repeat>
       </field>
       <field>
-        <name>PLT</name>
-        <type>Number</type>
+        <name>Age_in_years</name>
+        <type>String</type>
         <format>#.#</format>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>11</length>
+        <precision>9</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>PLTU</name>
+        <name>Sex</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1071,28 +926,193 @@
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>5</length>
+        <length>6</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>LDH</name>
-        <type>Number</type>
-        <format>#.#</format>
+        <name>Race</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>32</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>LDHU</name>
+        <name>Ethnicity</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>22</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>Ethnic_Classification</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>32</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>WBC_(x10^3/MicroLiter)_levels</name>
+        <type>String</type>
+        <format>#.#</format>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>5</length>
+        <precision>1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>Bone_marrow_leukemic_blast_percentage_(%)</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>14</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>Peripheral_blasts_(%)</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>14</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>MRD_at_end_of_course_2</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>7</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>MRD_at_end_of_course_1</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>7</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>MRD_%_at_end_of_course_1</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>14</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>MRD_%_at_end_of_course_2</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>14</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>CR_status_at_end_of_course_1</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>9</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>CR_status_at_end_of_course_2</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>11</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>SCT_in_1st_CR</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1107,10 +1127,40 @@
         <repeat>N</repeat>
       </field>
       <field>
-        <name>BMB</name>
-        <type>Number</type>
+        <name>OS_time_(days)</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>$</currency>
+        <decimal>,</decimal>
+        <group>.</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>15</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>OS_(Years)</name>
+        <type>String</type>
         <format>#.#</format>
         <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>18</length>
+        <precision>16</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>Recoded_OS_ID</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>,</decimal>
         <group>.</group>
         <nullif>-</nullif>
@@ -1122,7 +1172,7 @@
         <repeat>N</repeat>
       </field>
       <field>
-        <name>BMBU</name>
+        <name>OS_event_ID</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1131,44 +1181,14 @@
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>1</length>
+        <length>5</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>PBB</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>PBBU</name>
+        <name>EFS_time_(days)</name>
         <type>String</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CGNK</name>
-        <type>Integer</type>
         <format>#</format>
         <currency>$</currency>
         <decimal>,</decimal>
@@ -1182,40 +1202,25 @@
         <repeat>N</repeat>
       </field>
       <field>
-        <name>CGCX</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CR1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>OSTM</name>
-        <type>Number</type>
+        <name>EFS_(Years)</name>
+        <type>String</type>
         <format>#.#</format>
         <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>19</length>
+        <precision>17</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>Recoded_Event_ID</name>
+        <type>String</type>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>,</decimal>
         <group>.</group>
         <nullif>-</nullif>
@@ -1227,7 +1232,7 @@
         <repeat>N</repeat>
       </field>
       <field>
-        <name>OSTMU</name>
+        <name>EFS_event_type_ID</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1236,43 +1241,13 @@
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>6</length>
+        <length>23</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>OSSTAT</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>EFSTM</name>
-        <type>Number</type>
-        <format>#.#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>EFSTMU</name>
+        <name>ISCN</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1281,43 +1256,13 @@
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>6</length>
+        <length>135</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>EFSSTAT</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>RFSTM</name>
-        <type>Number</type>
-        <format>#.#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>RFSTMU</name>
+        <name>Primary_Fusion</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1326,238 +1271,13 @@
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>6</length>
+        <length>13</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>RFSSTAT</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>ASXL1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>ATRX</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>BCOR</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>BCORL1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>BRAF</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CALR</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CBL</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CBLB</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CDKN2A</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CEBPA</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CEBPADM</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CEBPA.bZIP</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CEBPA.bZIP.inframe</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CEBPA.TAD</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>CEBPASTAT</name>
+        <name>Primary_CNV</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -1566,968 +1286,473 @@
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>6</length>
+        <length>18</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>CSF3R</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>Unnamed:_27</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>23</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>CUX1</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>Additional_CNV_or_Fusion</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>14</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>DNMT3A</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>FLT3/ITD_positive?</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>3</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>ETV6</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>FLT3/ITD_allelic_ratio</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>14</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>EZH2</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>WT1_mutation?</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>3</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>FBXW7</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>NPM_mutation?</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>2</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>FLT3I</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>CEBPA_mutation?</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>3</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>FLT3T</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>CEBPA_Allelic_status?</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>13</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>FLT3R</name>
-        <type>Number</type>
-        <format>#.#</format>
+        <name>c_KIT_Mutation_(Exon_8)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>3</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>GATA1</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>c_KIT_Mutation_(Exon17)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>3</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>GATA2</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>RAS_Mutation</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>22</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>GNAS</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>RAS_Gene</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>4</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>HRAS</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>CBL_Mutation</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>13</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>IDH1</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>t(9;11)(p22;q23)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>IDH2</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>t(6;9)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>IKZF1</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>t(8;21)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>JAK2</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>t(3;5)(q25;q34)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>KDM6A</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>t(6;11)(q27;q23)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>KIT</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>t(10;11)(p11.2;q23)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>KRAS</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>t(11:19)(q23;p13.1)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>MPL</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>inv(16)</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>MYD88</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>del5q</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>NOTCH1</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>del7q</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>NPM1</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>del9q</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>NRAS</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>minus_5</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>PDGFRA</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>minus_7</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>PTEN</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>PHF6</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>PTPN11</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>RAD21</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>RUNX1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>SETBP1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>SF3B1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>SMC1A</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>SMC3</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>SRSF2</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>STAG2</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>TET2</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>TP53</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>U2AF1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>WT1</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>ZRSR2</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>inv16_t16.16</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t8.21</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.6.9..p23.q34.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>inv.3..q21.q26.2.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>minus.5</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>del.5q.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.9.22..q34.q11.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>minus.7</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>minus.17</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.v.11..v.q23.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>abn.17p.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.9.11..p21.23.q23.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.3.5.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.6.11.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.10.11.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>t.11.19..q23.p13.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>del.7q.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>del.9q.</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
         <name>trisomy_8</name>
-        <type>Integer</type>
-        <format>#</format>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
         <name>trisomy_21</name>
-        <type>Integer</type>
-        <format>#</format>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>minus.Y</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>MLL</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>minus.X</name>
-        <type>Integer</type>
-        <format>#</format>
+        <name>Minus_Y</name>
+        <type>String</type>
+        <format/>
         <currency>$</currency>
-        <decimal>,</decimal>
-        <group>.</group>
+        <decimal>.</decimal>
+        <group>,</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
-        <length>15</length>
-        <precision>0</precision>
+        <length>7</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>Minus_X</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>7</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
@@ -2567,41 +1792,41 @@
     </remotesteps>
     <GUI>
       <xloc>48</xloc>
-      <yloc>16</yloc>
+      <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Row normaliser</name>
+    <name>Row normaliser - FLOW-measurement_source_value</name>
     <type>Normaliser</type>
     <description/>
-    <distribute>Y</distribute>
+    <distribute>N</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <typefield>FLOW-observation_source_value</typefield>
+    <typefield>FLOW-measurement_source_value</typefield>
     <fields>
       <field>
-        <name>Hemoglobin</name>
-        <value>Hemoglobin</value>
+        <name>White blood cell count</name>
+        <value>White blood cell count</value>
         <norm>FLOW-vlaue_as_number</norm>
       </field>
       <field>
-        <name>Survival time</name>
-        <value>Survival time</value>
+        <name>Blast cell count</name>
+        <value>Blast cell count</value>
         <norm>FLOW-vlaue_as_number</norm>
       </field>
       <field>
-        <name>Time of event</name>
-        <value>Time of event</value>
+        <name>Blast count, blood</name>
+        <value>Blast count, blood</value>
         <norm>FLOW-vlaue_as_number</norm>
       </field>
       <field>
-        <name>Duration of recurrence-free survival</name>
-        <value>Duration of recurrence-free survival</value>
+        <name>Ratio measurement</name>
+        <value>Ratio measurement</value>
         <norm>FLOW-vlaue_as_number</norm>
       </field>
     </fields>
@@ -2614,13 +1839,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>880</xloc>
-      <yloc>16</yloc>
+      <xloc>480</xloc>
+      <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Select values - observation</name>
+    <name>Select values - measurement</name>
     <type>SelectValues</type>
     <description/>
     <distribute>N</distribute>
@@ -2632,31 +1857,28 @@
     </partitioning>
     <fields>
       <field>
-        <name>﻿Pat</name>
+        <name>USI</name>
       </field>
       <field>
-        <name>TIDTC_(date_of_Diagnosis)</name>
+        <name>WBC_(x10^3/MicroLiter)_levels</name>
       </field>
       <field>
-        <name>HB</name>
+        <name>Bone_marrow_leukemic_blast_percentage_(%)</name>
       </field>
       <field>
-        <name>OSTM</name>
+        <name>Peripheral_blasts_(%)</name>
       </field>
       <field>
-        <name>EFSTM</name>
-      </field>
-      <field>
-        <name>RFSTM</name>
+        <name>FLT3/ITD_allelic_ratio</name>
       </field>
       <select_unspecified>N</select_unspecified>
       <meta>
-        <name>TIDTC_(date_of_Diagnosis)</name>
-        <rename>TIDTC_(date_of_Diagnosis)</rename>
-        <type>Date</type>
+        <name>USI</name>
+        <rename>Patient_id</rename>
+        <type>String</type>
         <length>-2</length>
         <precision>-2</precision>
-        <conversion_mask>yyyy-MM-dd</conversion_mask>
+        <conversion_mask/>
         <date_format_lenient>false</date_format_lenient>
         <date_format_locale/>
         <date_format_timezone/>
@@ -2668,9 +1890,9 @@
         <storage_type/>
       </meta>
       <meta>
-        <name>HB</name>
-        <rename>Hemoglobin</rename>
-        <type>BigNumber</type>
+        <name>WBC_(x10^3/MicroLiter)_levels</name>
+        <rename>White blood cell count</rename>
+        <type>String</type>
         <length>15</length>
         <precision>-2</precision>
         <conversion_mask>0.00</conversion_mask>
@@ -2685,9 +1907,9 @@
         <storage_type/>
       </meta>
       <meta>
-        <name>OSTM</name>
-        <rename>Survival time</rename>
-        <type>BigNumber</type>
+        <name>Bone_marrow_leukemic_blast_percentage_(%)</name>
+        <rename>Blast cell count</rename>
+        <type>String</type>
         <length>15</length>
         <precision>-2</precision>
         <conversion_mask>0.00</conversion_mask>
@@ -2702,9 +1924,9 @@
         <storage_type/>
       </meta>
       <meta>
-        <name>EFSTM</name>
-        <rename>Time of event</rename>
-        <type>BigNumber</type>
+        <name>Peripheral_blasts_(%)</name>
+        <rename>Blast count, blood</rename>
+        <type>String</type>
         <length>15</length>
         <precision>-2</precision>
         <conversion_mask>0.00</conversion_mask>
@@ -2719,9 +1941,9 @@
         <storage_type/>
       </meta>
       <meta>
-        <name>RFSTM</name>
-        <rename>Duration of recurrence-free survival</rename>
-        <type>BigNumber</type>
+        <name>FLT3/ITD_allelic_ratio</name>
+        <rename>Ratio measurement</rename>
+        <type>String</type>
         <length>15</length>
         <precision>-2</precision>
         <conversion_mask>0.00</conversion_mask>
@@ -2745,8 +1967,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>432</xloc>
-      <yloc>16</yloc>
+      <xloc>208</xloc>
+      <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -2766,13 +1988,13 @@
         <name>person_id</name>
       </field>
       <field>
-        <name>FLOW-observation_concept_id</name>
+        <name>FLOW-measurement_concept_id</name>
       </field>
       <field>
-        <name>TIDTC_(date_of_Diagnosis)</name>
+        <name>FLOW-measurement_date</name>
       </field>
       <field>
-        <name>FLOW-observation_type_concept_id</name>
+        <name>FLOW-measurement_type_concept_id</name>
       </field>
       <field>
         <name>FLOW-vlaue_as_number</name>
@@ -2781,54 +2003,168 @@
         <name>FLOW-unit_concept_id</name>
       </field>
       <field>
-        <name>FLOW-observation_source_value</name>
+        <name>FLOW-measurement_source_value</name>
       </field>
       <field>
         <name>FLOW-unit_source_value</name>
       </field>
-      <select_unspecified>N</select_unspecified>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>1088</xloc>
-      <yloc>608</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Sort rows</name>
-    <type>SortRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <directory>%%java.io.tmpdir%%</directory>
-    <prefix>out</prefix>
-    <sort_size>1000000</sort_size>
-    <free_memory/>
-    <compress>N</compress>
-    <compress_variable/>
-    <unique_rows>N</unique_rows>
-    <fields>
       <field>
-        <name>﻿Pat</name>
-        <ascending>Y</ascending>
-        <case_sensitive>N</case_sensitive>
-        <collator_enabled>N</collator_enabled>
-        <collator_strength>0</collator_strength>
-        <presorted>N</presorted>
+        <name>FLOW-value_as_string</name>
       </field>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>person_id</name>
+        <rename>person_id</rename>
+        <type>Integer</type>
+        <length>9</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-measurement_concept_id</name>
+        <rename>FLOW-measurement_concept_id</rename>
+        <type>Integer</type>
+        <length>9</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-measurement_date</name>
+        <rename>FLOW-measurement_date</rename>
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-measurement_type_concept_id</name>
+        <rename>FLOW-measurement_type_concept_id</rename>
+        <type>Integer</type>
+        <length>-2</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-vlaue_as_number</name>
+        <rename>FLOW-vlaue_as_number</rename>
+        <type>Number</type>
+        <length>15</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-unit_concept_id</name>
+        <rename>FLOW-unit_concept_id</rename>
+        <type>Integer</type>
+        <length>9</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-measurement_source_value</name>
+        <rename>FLOW-measurement_source_value</rename>
+        <type>String</type>
+        <length>22</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-unit_source_value</name>
+        <rename>FLOW-unit_source_value</rename>
+        <type>String</type>
+        <length>5</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-value_as_string</name>
+        <rename>FLOW-value_as_string</rename>
+        <type>String</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -2839,35 +2175,35 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>768</xloc>
-      <yloc>16</yloc>
+      <xloc>512</xloc>
+      <yloc>944</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Stream lookup - FLOW-observation_concept_id</name>
+    <name>Stream lookup - FLOW-measurement_concept_id</name>
     <type>StreamLookup</type>
     <description/>
-    <distribute>Y</distribute>
+    <distribute>N</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from>Table input - FLOW-observation_concept_id</from>
+    <from>Table input - concept 1</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>Y</preserve_memory>
     <sorted_list>Y</sorted_list>
     <integer_pair>N</integer_pair>
     <lookup>
       <key>
-        <name>FLOW-observation_source_value</name>
+        <name>FLOW-measurement_source_value</name>
         <field>concept_name</field>
       </key>
       <value>
         <name>concept_id</name>
-        <rename>FLOW-observation_concept_id</rename>
+        <rename>FLOW-measurement_concept_id</rename>
         <default/>
         <type>Integer</type>
       </value>
@@ -2881,8 +2217,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>848</xloc>
-      <yloc>272</yloc>
+      <xloc>528</xloc>
+      <yloc>624</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -2897,15 +2233,15 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from>Table input - FLOW-unit_concept_id</from>
+    <from>Table input - concept 2</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>Y</preserve_memory>
     <sorted_list>N</sorted_list>
     <integer_pair>N</integer_pair>
     <lookup>
       <key>
-        <name>FLOW-unit_source_value</name>
-        <field>concept_code</field>
+        <name>FLOW-unit_source_value-full-form</name>
+        <field>concept_name</field>
       </key>
       <value>
         <name>concept_id</name>
@@ -2923,8 +2259,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>848</xloc>
-      <yloc>368</yloc>
+      <xloc>528</xloc>
+      <yloc>720</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -2939,14 +2275,14 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from>Table input - Person_Id</from>
+    <from>Table input - Person</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>Y</preserve_memory>
     <sorted_list>N</sorted_list>
     <integer_pair>N</integer_pair>
     <lookup>
       <key>
-        <name>﻿Pat</name>
+        <name>Patient_id</name>
         <field>person_source_value</field>
       </key>
       <value>
@@ -2965,13 +2301,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>848</xloc>
-      <yloc>480</yloc>
+      <xloc>528</xloc>
+      <yloc>832</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Table input - FLOW-observation_concept_id</name>
+    <name>Table input - Person</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -2981,537 +2317,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>AML_OMOP</connection>
-    <sql>SELECT * FROM cds_cdm.concept WHERE vocabulary_id = 'SNOMED' AND standard_concept = 'S' </sql>
-    <limit>0</limit>
-    <lookup/>
-    <execute_each_row>N</execute_each_row>
-    <variables_active>N</variables_active>
-    <lazy_conversion_active>N</lazy_conversion_active>
-    <cached_row_meta_active>N</cached_row_meta_active>
-    <row-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>concept_id</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>concept_id</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>concept_name</name>
-        <length>255</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>concept_name</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>domain_id</name>
-        <length>20</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>domain_id</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>vocabulary_id</name>
-        <length>20</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>vocabulary_id</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>concept_class_id</name>
-        <length>20</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>concept_class_id</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>standard_concept</name>
-        <length>1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>standard_concept</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>concept_code</name>
-        <length>50</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>concept_code</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Date</type>
-        <storagetype>normal</storagetype>
-        <name>valid_start_date</name>
-        <length>-1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>valid_start_date</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Date</type>
-        <storagetype>normal</storagetype>
-        <name>valid_end_date</name>
-        <length>-1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>valid_end_date</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>invalid_reason</name>
-        <length>1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-observation_concept_id</origin>
-        <comments>invalid_reason</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-    </row-meta>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>496</xloc>
-      <yloc>272</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Table input - FLOW-unit_concept_id</name>
-    <type>TableInput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>AML_OMOP</connection>
-    <sql>SELECT * FROM cds_cdm.concept WHERE vocabulary_id = 'UCUM' AND standard_concept = 'S' </sql>
-    <limit>0</limit>
-    <lookup/>
-    <execute_each_row>N</execute_each_row>
-    <variables_active>N</variables_active>
-    <lazy_conversion_active>N</lazy_conversion_active>
-    <cached_row_meta_active>N</cached_row_meta_active>
-    <row-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>concept_id</name>
-        <length>9</length>
-        <precision>0</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>concept_id</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>concept_name</name>
-        <length>255</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>concept_name</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>domain_id</name>
-        <length>20</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>domain_id</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>vocabulary_id</name>
-        <length>20</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>vocabulary_id</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>concept_class_id</name>
-        <length>20</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>concept_class_id</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>standard_concept</name>
-        <length>1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>standard_concept</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>concept_code</name>
-        <length>50</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>concept_code</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Date</type>
-        <storagetype>normal</storagetype>
-        <name>valid_start_date</name>
-        <length>-1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>valid_start_date</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Date</type>
-        <storagetype>normal</storagetype>
-        <name>valid_end_date</name>
-        <length>-1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>valid_end_date</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>String</type>
-        <storagetype>normal</storagetype>
-        <name>invalid_reason</name>
-        <length>1</length>
-        <precision>-1</precision>
-        <origin>Table input - FLOW-unit_concept_id</origin>
-        <comments>invalid_reason</comments>
-        <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>en_US</date_format_locale>
-        <date_format_timezone>Europe/Berlin</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-    </row-meta>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>496</xloc>
-      <yloc>368</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Table input - Person_Id</name>
-    <type>TableInput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>AML_OMOP</connection>
+    <connection>ohdsi</connection>
     <sql>SELECT * FROM cds_cdm.person</sql>
     <limit>0</limit>
     <lookup/>
@@ -3526,11 +2332,11 @@
         <name>person_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>person_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3549,11 +2355,11 @@
         <name>gender_concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>gender_concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3572,11 +2378,11 @@
         <name>year_of_birth</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>year_of_birth</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3595,11 +2401,11 @@
         <name>month_of_birth</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>month_of_birth</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3618,11 +2424,11 @@
         <name>day_of_birth</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>day_of_birth</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3641,11 +2447,11 @@
         <name>birth_datetime</name>
         <length>6</length>
         <precision>-1</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>birth_datetime</comments>
         <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3664,11 +2470,11 @@
         <name>race_concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>race_concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3687,11 +2493,11 @@
         <name>ethnicity_concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>ethnicity_concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3710,11 +2516,11 @@
         <name>location_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>location_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3733,11 +2539,11 @@
         <name>provider_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>provider_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3756,11 +2562,11 @@
         <name>care_site_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>care_site_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3779,11 +2585,11 @@
         <name>person_source_value</name>
         <length>50</length>
         <precision>-1</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>person_source_value</comments>
         <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3802,11 +2608,11 @@
         <name>gender_source_value</name>
         <length>50</length>
         <precision>-1</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>gender_source_value</comments>
         <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3825,11 +2631,11 @@
         <name>gender_source_concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>gender_source_concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3848,11 +2654,11 @@
         <name>race_source_value</name>
         <length>50</length>
         <precision>-1</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>race_source_value</comments>
         <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3871,11 +2677,11 @@
         <name>race_source_concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>race_source_concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3894,11 +2700,11 @@
         <name>ethnicity_source_value</name>
         <length>50</length>
         <precision>-1</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>ethnicity_source_value</comments>
         <conversion_Mask/>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3917,11 +2723,11 @@
         <name>ethnicity_source_concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - Person_Id</origin>
+        <origin>Table input - Person</origin>
         <comments>ethnicity_source_concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>,</decimal_symbol>
-        <grouping_symbol>.</grouping_symbol>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -3944,8 +2750,572 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>496</xloc>
-      <yloc>480</yloc>
+      <xloc>176</xloc>
+      <yloc>832</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Table input - concept 1</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>ohdsi</connection>
+    <sql>SELECT * FROM cds_cdm.concept WHERE vocabulary_id = 'SNOMED' AND standard_concept = 'S' </sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cached_row_meta_active>N</cached_row_meta_active>
+    <row-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>concept_id</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>concept_id</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>concept_name</name>
+        <length>255</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>concept_name</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>domain_id</name>
+        <length>20</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>domain_id</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>vocabulary_id</name>
+        <length>20</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>vocabulary_id</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>concept_class_id</name>
+        <length>20</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>concept_class_id</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>standard_concept</name>
+        <length>1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>standard_concept</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>concept_code</name>
+        <length>50</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>concept_code</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Date</type>
+        <storagetype>normal</storagetype>
+        <name>valid_start_date</name>
+        <length>-1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>valid_start_date</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Date</type>
+        <storagetype>normal</storagetype>
+        <name>valid_end_date</name>
+        <length>-1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>valid_end_date</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>invalid_reason</name>
+        <length>1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 1</origin>
+        <comments>invalid_reason</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+    </row-meta>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>176</xloc>
+      <yloc>624</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Table input - concept 2</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>ohdsi</connection>
+    <sql>SELECT * FROM cds_cdm.concept WHERE standard_concept = 'S' AND (vocabulary_id = 'OMOP Genomic' OR vocabulary_id = 'UCUM')</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cached_row_meta_active>N</cached_row_meta_active>
+    <row-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>concept_id</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>concept_id</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>concept_name</name>
+        <length>255</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>concept_name</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>domain_id</name>
+        <length>20</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>domain_id</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>vocabulary_id</name>
+        <length>20</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>vocabulary_id</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>concept_class_id</name>
+        <length>20</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>concept_class_id</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>standard_concept</name>
+        <length>1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>standard_concept</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>concept_code</name>
+        <length>50</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>concept_code</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Date</type>
+        <storagetype>normal</storagetype>
+        <name>valid_start_date</name>
+        <length>-1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>valid_start_date</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Date</type>
+        <storagetype>normal</storagetype>
+        <name>valid_end_date</name>
+        <length>-1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>valid_end_date</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>String</type>
+        <storagetype>normal</storagetype>
+        <name>invalid_reason</name>
+        <length>1</length>
+        <precision>-1</precision>
+        <origin>Table input - concept 2</origin>
+        <comments>invalid_reason</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Berlin</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+    </row-meta>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>176</xloc>
+      <yloc>720</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Value mapper</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <field_to_use>FLOW-value_as_string</field_to_use>
+    <target_field/>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>&lt;0.1</source_value>
+        <target_value>less than 0.1</target_value>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>416</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -3960,25 +3330,25 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <field_to_use>FLOW-observation_source_value</field_to_use>
+    <field_to_use>FLOW-measurement_source_value</field_to_use>
     <target_field>FLOW-unit_source_value</target_field>
     <non_match_default/>
     <fields>
       <field>
-        <source_value>Hemoglobin</source_value>
-        <target_value>mmol/L</target_value>
+        <source_value>White blood cell count</source_value>
+        <target_value>Gpt/l</target_value>
       </field>
       <field>
-        <source_value>Survival time</source_value>
-        <target_value>mo</target_value>
+        <source_value>Blast cell count</source_value>
+        <target_value>%</target_value>
       </field>
       <field>
-        <source_value>Duration of recurrence-free survival</source_value>
-        <target_value>mo</target_value>
+        <source_value>Blast count, blood</source_value>
+        <target_value>%</target_value>
       </field>
       <field>
-        <source_value>Time of event</source_value>
-        <target_value>mo</target_value>
+        <source_value>Ratio measurement</source_value>
+        <target_value>ratio</target_value>
       </field>
     </fields>
     <attributes/>
@@ -3990,13 +3360,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1088</xloc>
-      <yloc>16</yloc>
+      <xloc>976</xloc>
+      <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Value mapper - date_of_diagnosis</name>
+    <name>Value mapper - FLOW-unit_source_value-full-form</name>
     <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
@@ -4006,13 +3376,21 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <field_to_use>TIDTC_(date_of_Diagnosis)</field_to_use>
-    <target_field/>
+    <field_to_use>FLOW-unit_source_value</field_to_use>
+    <target_field>FLOW-unit_source_value-full-form</target_field>
     <non_match_default/>
     <fields>
       <field>
-        <source_value>NA</source_value>
-        <target_value>1800-01-01</target_value>
+        <source_value>Gpt/l</source_value>
+        <target_value>GPT (glutamic--pyruvic transaminase) gene variant measurement</target_value>
+      </field>
+      <field>
+        <source_value>%</source_value>
+        <target_value>percent</target_value>
+      </field>
+      <field>
+        <source_value>ratio</source_value>
+        <target_value>ratio</target_value>
       </field>
     </fields>
     <attributes/>
@@ -4024,8 +3402,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>208</xloc>
-      <yloc>16</yloc>
+      <xloc>976</xloc>
+      <yloc>144</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4040,9 +3418,9 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>AML_OMOP</connection>
+    <connection>ohdsi</connection>
     <schema>cds_cdm</schema>
-    <table>observation</table>
+    <table>measurement</table>
     <commit>2000</commit>
     <truncate>Y</truncate>
     <ignore_errors>N</ignore_errors>
@@ -4063,32 +3441,32 @@
         <stream_name>person_id</stream_name>
       </field>
       <field>
-        <column_name>observation_concept_id</column_name>
-        <stream_name>FLOW-observation_concept_id</stream_name>
+        <column_name>measurement_concept_id</column_name>
+        <stream_name>FLOW-measurement_concept_id</stream_name>
       </field>
       <field>
-        <column_name>observation_date</column_name>
-        <stream_name>TIDTC_(date_of_Diagnosis)</stream_name>
+        <column_name>measurement_date</column_name>
+        <stream_name>FLOW-measurement_date</stream_name>
       </field>
       <field>
-        <column_name>observation_type_concept_id</column_name>
-        <stream_name>FLOW-observation_type_concept_id</stream_name>
+        <column_name>measurement_type_concept_id</column_name>
+        <stream_name>FLOW-measurement_type_concept_id</stream_name>
       </field>
       <field>
         <column_name>value_as_number</column_name>
         <stream_name>FLOW-vlaue_as_number</stream_name>
       </field>
       <field>
-        <column_name>unit_source_value</column_name>
-        <stream_name>FLOW-unit_source_value</stream_name>
-      </field>
-      <field>
-        <column_name>observation_source_value</column_name>
-        <stream_name>FLOW-observation_source_value</stream_name>
-      </field>
-      <field>
         <column_name>unit_concept_id</column_name>
         <stream_name>FLOW-unit_concept_id</stream_name>
+      </field>
+      <field>
+        <column_name>measurement_source_value</column_name>
+        <stream_name>FLOW-measurement_source_value</stream_name>
+      </field>
+      <field>
+        <column_name>unit_source_value</column_name>
+        <stream_name>FLOW-unit_source_value</stream_name>
       </field>
     </fields>
     <attributes/>
@@ -4100,8 +3478,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1360</xloc>
-      <yloc>608</yloc>
+      <xloc>832</xloc>
+      <yloc>944</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4135,8 +3513,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1360</xloc>
-      <yloc>320</yloc>
+      <xloc>832</xloc>
+      <yloc>688</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4170,8 +3548,117 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1360</xloc>
-      <yloc>480</yloc>
+      <xloc>832</xloc>
+      <yloc>832</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>fill in &lt;0.1</name>
+    <type>SetValueField</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <name>FLOW-value_as_string</name>
+        <replaceby>FLOW-vlaue_as_number</replaceby>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>filter out &lt;0.1</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <send_true_to>Stream lookup - FLOW-measurement_concept_id</send_true_to>
+    <send_false_to>fill in &lt;0.1</send_false_to>
+    <compare>
+      <condition>
+        <negated>Y</negated>
+        <leftvalue>FLOW-vlaue_as_number</leftvalue>
+        <function>=</function>
+        <rightvalue/>
+        <value>
+          <name>constant</name>
+          <type>String</type>
+          <text>&lt;0.1</text>
+          <length>-1</length>
+          <precision>-1</precision>
+          <isnull>N</isnull>
+          <mask/>
+        </value>
+      </condition>
+    </compare>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>528</xloc>
+      <yloc>224</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>remove &lt;0.1 in number</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <field_to_use>FLOW-vlaue_as_number</field_to_use>
+    <target_field/>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>&lt;0.1</source_value>
+        <target_value/>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>560</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

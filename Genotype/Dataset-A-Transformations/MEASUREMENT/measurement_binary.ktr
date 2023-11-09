@@ -438,13 +438,13 @@
   </notepads>
   <connection>
     <name>AML_OMOP</name>
-    <server>sv-diz-aml.med.tu-dresden.de</server>
+    <server>${DATABASE_IP}</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>ohdsi</database>
-    <port>5432</port>
-    <username>ohdsi_admin_user</username>
-    <password>Encrypted 446b6e465176565072666a4a35708da9e1b85a93a882aa108c518f8581eb</password>
+    <database>${DATABASE_NAME}</database>
+    <port>${DATABASE_PORT}</port>
+    <username>${DATABASE_USER}</username>
+    <password>${DATABASE_PASSWORD}</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -463,7 +463,7 @@
       </attribute>
       <attribute>
         <code>PORT_NUMBER</code>
-        <attribute>5432</attribute>
+        <attribute>${DATABASE_PORT}</attribute>
       </attribute>
       <attribute>
         <code>PRESERVE_RESERVED_WORD_CASE</code>
@@ -618,8 +618,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>192</yloc>
+      <xloc>896</xloc>
+      <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -662,8 +662,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1232</xloc>
-      <yloc>288</yloc>
+      <xloc>720</xloc>
+      <yloc>256</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -778,8 +778,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1216</xloc>
-      <yloc>464</yloc>
+      <xloc>704</xloc>
+      <yloc>432</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1252,12 +1252,7 @@
     <length>Characters</length>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>/Users/ahmadinai/Desktop/AML/Dresden Study Alliance Leukemia AML(111 elements).csv</name>
-      <filemask/>
-      <exclude_filemask/>
-      <file_required>N</file_required>
-      <include_subfolders>N</include_subfolders>
-      <name/>
+      <name>${User/Transfrmations-folder/}Dataset-A</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -2968,7 +2963,7 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>48</xloc>
+      <xloc>64</xloc>
       <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
@@ -3340,271 +3335,204 @@
     <fields>
       <field>
         <name>﻿Pat</name>
-        <rename/>
       </field>
       <field>
         <name>TIDTC_(date_of_Diagnosis)</name>
-        <rename/>
       </field>
       <field>
         <name>CGCX</name>
-        <rename/>
       </field>
       <field>
         <name>ASXL1</name>
-        <rename/>
       </field>
       <field>
         <name>ATRX</name>
-        <rename/>
       </field>
       <field>
         <name>BCOR</name>
-        <rename/>
       </field>
       <field>
         <name>BCORL1</name>
-        <rename/>
       </field>
       <field>
         <name>BRAF</name>
-        <rename/>
       </field>
       <field>
         <name>CALR</name>
-        <rename/>
       </field>
       <field>
         <name>CBL</name>
-        <rename/>
       </field>
       <field>
         <name>CBLB</name>
-        <rename/>
       </field>
       <field>
         <name>CDKN2A</name>
-        <rename/>
       </field>
       <field>
         <name>CEBPA</name>
-        <rename/>
       </field>
       <field>
         <name>CEBPA.bZIP</name>
-        <rename/>
       </field>
       <field>
         <name>CEBPA.bZIP.inframe</name>
-        <rename/>
       </field>
       <field>
         <name>CEBPA.TAD</name>
-        <rename/>
       </field>
       <field>
         <name>CSF3R</name>
-        <rename/>
       </field>
       <field>
         <name>CUX1</name>
-        <rename/>
       </field>
       <field>
         <name>DNMT3A</name>
-        <rename/>
       </field>
       <field>
         <name>ETV6</name>
-        <rename/>
       </field>
       <field>
         <name>EZH2</name>
-        <rename/>
       </field>
       <field>
         <name>FBXW7</name>
-        <rename/>
       </field>
       <field>
         <name>FLT3I</name>
-        <rename/>
       </field>
       <field>
         <name>FLT3T</name>
-        <rename/>
       </field>
       <field>
         <name>GATA1</name>
-        <rename/>
       </field>
       <field>
         <name>GATA2</name>
-        <rename/>
       </field>
       <field>
         <name>GNAS</name>
-        <rename/>
       </field>
       <field>
         <name>HRAS</name>
-        <rename/>
       </field>
       <field>
         <name>IDH1</name>
-        <rename/>
       </field>
       <field>
         <name>IDH2</name>
-        <rename/>
       </field>
       <field>
         <name>IKZF1</name>
-        <rename/>
       </field>
       <field>
         <name>JAK2</name>
-        <rename/>
       </field>
       <field>
         <name>KDM6A</name>
-        <rename/>
       </field>
       <field>
         <name>KIT</name>
-        <rename/>
       </field>
       <field>
         <name>KRAS</name>
-        <rename/>
       </field>
       <field>
         <name>MPL</name>
-        <rename/>
       </field>
       <field>
         <name>MYD88</name>
-        <rename/>
       </field>
       <field>
         <name>NOTCH1</name>
-        <rename/>
       </field>
       <field>
         <name>NPM1</name>
-        <rename/>
       </field>
       <field>
         <name>NRAS</name>
-        <rename/>
       </field>
       <field>
         <name>PDGFRA</name>
-        <rename/>
       </field>
       <field>
         <name>PTEN</name>
-        <rename/>
       </field>
       <field>
         <name>PHF6</name>
-        <rename/>
       </field>
       <field>
         <name>PTPN11</name>
-        <rename/>
       </field>
       <field>
         <name>RAD21</name>
-        <rename/>
       </field>
       <field>
         <name>RUNX1</name>
-        <rename/>
       </field>
       <field>
         <name>SETBP1</name>
-        <rename/>
       </field>
       <field>
         <name>SF3B1</name>
-        <rename/>
       </field>
       <field>
         <name>SMC1A</name>
-        <rename/>
       </field>
       <field>
         <name>SMC3</name>
-        <rename/>
       </field>
       <field>
         <name>SRSF2</name>
-        <rename/>
       </field>
       <field>
         <name>STAG2</name>
-        <rename/>
       </field>
       <field>
         <name>TET2</name>
-        <rename/>
       </field>
       <field>
         <name>TP53</name>
-        <rename/>
       </field>
       <field>
         <name>U2AF1</name>
-        <rename/>
       </field>
       <field>
         <name>WT1</name>
-        <rename/>
       </field>
       <field>
         <name>ZRSR2</name>
-        <rename/>
       </field>
       <field>
         <name>inv16_t16.16</name>
-        <rename/>
       </field>
       <field>
         <name>t8.21</name>
-        <rename/>
       </field>
       <field>
         <name>t.6.9..p23.q34.</name>
-        <rename/>
       </field>
       <field>
         <name>inv.3..q21.q26.2.</name>
-        <rename/>
       </field>
       <field>
         <name>t.9.22..q34.q11.</name>
-        <rename/>
       </field>
       <field>
         <name>t.v.11..v.q23.</name>
-        <rename/>
       </field>
       <field>
         <name>t.3.5.</name>
-        <rename/>
       </field>
       <field>
         <name>t.6.11.</name>
-        <rename/>
       </field>
       <field>
         <name>t.10.11.</name>
-        <rename/>
       </field>
       <field>
         <name>t.11.19..q23.p13.</name>
-        <rename/>
       </field>
       <select_unspecified>N</select_unspecified>
       <meta>
@@ -4805,8 +4733,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1216</xloc>
-      <yloc>672</yloc>
+      <xloc>704</xloc>
+      <yloc>640</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4889,8 +4817,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1040</xloc>
-      <yloc>192</yloc>
+      <xloc>528</xloc>
+      <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4931,8 +4859,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1040</xloc>
-      <yloc>384</yloc>
+      <xloc>528</xloc>
+      <yloc>352</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -5380,8 +5308,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>576</xloc>
-      <yloc>384</yloc>
+      <xloc>64</xloc>
+      <yloc>352</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -5645,8 +5573,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>576</xloc>
-      <yloc>192</yloc>
+      <xloc>64</xloc>
+      <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -5691,8 +5619,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1504</xloc>
-      <yloc>128</yloc>
+      <xloc>1120</xloc>
+      <yloc>336</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -5733,8 +5661,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>64</yloc>
+      <xloc>1104</xloc>
+      <yloc>144</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -5835,8 +5763,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>672</yloc>
+      <xloc>896</xloc>
+      <yloc>640</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -5870,8 +5798,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>288</yloc>
+      <xloc>896</xloc>
+      <yloc>256</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -5905,8 +5833,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>464</yloc>
+      <xloc>896</xloc>
+      <yloc>432</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

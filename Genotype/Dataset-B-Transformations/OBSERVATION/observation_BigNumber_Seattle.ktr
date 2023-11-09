@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>condition_occurance_Seattle</name>
+    <name>observation_BigNumber_Seattle</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -428,9 +428,9 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2023/03/07 09:54:39.397</created_date>
+    <created_date>2023/02/14 08:49:05.803</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2023/03/07 09:54:39.397</modified_date>
+    <modified_date>2023/02/14 08:49:05.803</modified_date>
     <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
@@ -438,13 +438,13 @@
   </notepads>
   <connection>
     <name>ohdsi</name>
-    <server>sv-diz-aml.med.tu-dresden.de</server>
+    <server>${DATABASE_IP}</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>ohdsi</database>
-    <port>5432</port>
-    <username>ohdsi_admin_user</username>
-    <password>Encrypted 446b6e465176565072666a4a35708da9e1b85a93a882aa108c518f8581eb</password>
+    <database>${DATABASE_NAME}</database>
+    <port>${DATABASE_PORT}</port>
+    <username>${DATABASE_USER}</username>
+    <password>${DATABASE_PASSWORD}</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -463,7 +463,7 @@
       </attribute>
       <attribute>
         <code>PORT_NUMBER</code>
-        <attribute>5432</attribute>
+        <attribute>${DATABASE_PORT}</attribute>
       </attribute>
       <attribute>
         <code>PRESERVE_RESERVED_WORD_CASE</code>
@@ -489,43 +489,48 @@
   </connection>
   <order>
     <hop>
-      <from>Filter rows - FLOW-condition_concept_id</from>
+      <from>Filter rows 1</from>
+      <to>Stream lookup - FLOW-unit_concept_id</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Filter rows 1</from>
+      <to>Write to log 2</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Filter rows 2</from>
+      <to>Select values - same order as database</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Filter rows 2</from>
+      <to>Write to log 3</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Stream lookup - FLOW-observation_concept_id</from>
+      <to>Filter rows 1</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Stream lookup - FLOW-unit_concept_id</from>
       <to>Stream lookup - Person_Id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Table input - FLOW-condition_status_concept_id</from>
-      <to>Stream lookup - FLOW-condition_status_concept_id</to>
+      <from>Stream lookup - Person_Id</from>
+      <to>Filter rows 2</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Add constants</from>
-      <to>Stream lookup - FLOW-condition_status_concept_id</to>
+      <from>Table input - FLOW-observation_concept_id</from>
+      <to>Stream lookup - FLOW-observation_concept_id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Filter rows - FLOW-condition_concept_id</from>
-      <to>Write to log - condition_concept_id</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Stream lookup - FLOW-condition_concept_id</from>
-      <to>Filter rows - FLOW-condition_concept_id</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Stream lookup - FLOW-condition_status_concept_id</from>
-      <to>Filter rows - FLOW-condition_status_concept_id</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Filter rows - FLOW-condition_status_concept_id</from>
-      <to>Stream lookup - FLOW-condition_concept_id</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Filter rows - Person_id</from>
-      <to>Write to log - Person_id</to>
+      <from>Table input - FLOW-unit_concept_id</from>
+      <to>Stream lookup - FLOW-unit_concept_id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -534,23 +539,38 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Stream lookup - Person_Id</from>
-      <to>Filter rows - Person_id</to>
+      <from>Add constants</from>
+      <to>Stream lookup - FLOW-observation_concept_id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Filter rows - FLOW-condition_status_concept_id</from>
-      <to>Write to log - condition_status_concept_id</to>
+      <from>Value mapper - FLOW-unit_source_value</from>
+      <to>Select values</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Filter rows - Person_id</from>
-      <to>Select values - same order as database</to>
+      <from>Row normaliser</from>
+      <to>Filter - Not applicable</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Table input - FLOW-condition_concept_id</from>
-      <to>Stream lookup - FLOW-condition_concept_id</to>
+      <from>Filter - Not applicable</from>
+      <to>Value mapper - FLOW-unit_source_value</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Input AML Data</from>
+      <to>Select values - observation</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Select values - observation</from>
+      <to>Row normaliser</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Select values</from>
+      <to>Add constants</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -558,27 +578,177 @@
       <to>Write to OMOP</to>
       <enabled>Y</enabled>
     </hop>
-    <hop>
-      <from>Row normaliser - FLOW-condition_source_value</from>
-      <to>Add constants</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>AML</from>
-      <to>Select values - CONDITION_OCCURRENCE</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Select values - CONDITION_OCCURRENCE</from>
-      <to>Row normaliser - FLOW-condition_source_value</to>
-      <enabled>Y</enabled>
-    </hop>
   </order>
   <step>
-    <name>AML</name>
-    <type>TextFileInput</type>
+    <name>Add constants</name>
+    <type>Constant</type>
     <description/>
     <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <name>FLOW-observation_type_concept_id</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>32817</nullif>
+        <length>-1</length>
+        <precision>0</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>FLOW-observation_date</name>
+        <type>Date</type>
+        <format>yyyy-MM-dd</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>1800-01-01</nullif>
+        <length>-1</length>
+        <precision>0</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>944</xloc>
+      <yloc>336</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Filter - Not applicable</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <send_true_to>Value mapper - FLOW-unit_source_value</send_true_to>
+    <send_false_to/>
+    <compare>
+      <condition>
+        <negated>Y</negated>
+        <leftvalue>FLOW-vlaue_as_number</leftvalue>
+        <function>=</function>
+        <rightvalue/>
+        <value>
+          <name>constant</name>
+          <type>String</type>
+          <text>Not applicable</text>
+          <length>-1</length>
+          <precision>-1</precision>
+          <isnull>N</isnull>
+          <mask/>
+        </value>
+      </condition>
+    </compare>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>560</xloc>
+      <yloc>224</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Filter rows 1</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <send_true_to>Stream lookup - FLOW-unit_concept_id</send_true_to>
+    <send_false_to>Write to log 2</send_false_to>
+    <compare>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>FLOW-observation_concept_id</leftvalue>
+        <function>IS NOT NULL</function>
+        <rightvalue/>
+      </condition>
+    </compare>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>464</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Filter rows 2</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <send_true_to>Select values - same order as database</send_true_to>
+    <send_false_to>Write to log 3</send_false_to>
+    <compare>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>person_id</leftvalue>
+        <function>IS NOT NULL</function>
+        <rightvalue/>
+      </condition>
+    </compare>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>640</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Input AML Data</name>
+    <type>TextFileInput</type>
+    <description/>
+    <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
@@ -613,7 +783,7 @@
     <length>Characters</length>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>/Users/ahmadinai/Desktop/AML/Seattle pediatric AML(57 elements).csv</name>
+      <name>${User/Transfrmations-folder/}Database-B</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -869,8 +1039,8 @@
         <type>String</type>
         <format>#</format>
         <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
+        <decimal>,</decimal>
+        <group>.</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
@@ -899,8 +1069,8 @@
         <type>String</type>
         <format>#</format>
         <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
+        <decimal>,</decimal>
+        <group>.</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
@@ -929,8 +1099,8 @@
         <type>String</type>
         <format>#</format>
         <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
+        <decimal>,</decimal>
+        <group>.</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
@@ -959,8 +1129,8 @@
         <type>String</type>
         <format>#</format>
         <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
+        <decimal>,</decimal>
+        <group>.</group>
         <nullif>-</nullif>
         <ifnull/>
         <position>-1</position>
@@ -1025,6 +1195,21 @@
         <ifnull/>
         <position>-1</position>
         <length>18</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>Unnamed:_27</name>
+        <type>String</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>23</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
@@ -1514,169 +1699,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>80</xloc>
-      <yloc>48</yloc>
+      <xloc>256</xloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Add constants</name>
-    <type>Constant</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <fields>
-      <field>
-        <name>FLOW-condition_type_concept_id</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>32817</nullif>
-        <length>-1</length>
-        <precision>0</precision>
-        <set_empty_string>N</set_empty_string>
-      </field>
-      <field>
-        <name>FLOW-condition_start_date</name>
-        <type>Date</type>
-        <format>yyyy-MM-dd</format>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>1800-01-01</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>608</xloc>
-      <yloc>176</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Filter rows - FLOW-condition_concept_id</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <send_true_to>Stream lookup - Person_Id</send_true_to>
-    <send_false_to>Write to log - condition_concept_id</send_false_to>
-    <compare>
-      <condition>
-        <negated>N</negated>
-        <leftvalue>FLOW-condition_concept_id</leftvalue>
-        <function>IS NOT NULL</function>
-        <rightvalue/>
-      </condition>
-    </compare>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>848</xloc>
-      <yloc>576</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Filter rows - FLOW-condition_status_concept_id</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <send_true_to>Stream lookup - FLOW-condition_concept_id</send_true_to>
-    <send_false_to>Write to log - condition_status_concept_id</send_false_to>
-    <compare>
-      <condition>
-        <negated>N</negated>
-        <leftvalue>FLOW-condition_status_concept_id</leftvalue>
-        <function>IS NOT NULL</function>
-        <rightvalue/>
-      </condition>
-    </compare>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>848</xloc>
-      <yloc>400</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Filter rows - Person_id</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <send_true_to>Select values - same order as database</send_true_to>
-    <send_false_to>Write to log - Person_id</send_false_to>
-    <compare>
-      <condition>
-        <negated>N</negated>
-        <leftvalue>Patient_id</leftvalue>
-        <function>IS NOT NULL</function>
-        <rightvalue/>
-      </condition>
-    </compare>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>848</xloc>
-      <yloc>736</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Row normaliser - FLOW-condition_source_value</name>
+    <name>Row normaliser</name>
     <type>Normaliser</type>
     <description/>
     <distribute>Y</distribute>
@@ -1686,27 +1715,27 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <typefield>FLOW-condition_source_value</typefield>
+    <typefield>FLOW-observation_source_value</typefield>
     <fields>
       <field>
-        <name>Deletion of part of long arm of chromosome 5</name>
-        <value>Deletion of part of long arm of chromosome 5</value>
-        <norm>FLOW-condition_status_source_value</norm>
+        <name>Survival time</name>
+        <value>Survival time</value>
+        <norm>FLOW-vlaue_as_number</norm>
       </field>
       <field>
-        <name>Deletion of part of chromosome 7</name>
-        <value>Deletion of part of chromosome 7</value>
-        <norm>FLOW-condition_status_source_value</norm>
+        <name>Time of event</name>
+        <value>Time of event</value>
+        <norm>FLOW-vlaue_as_number</norm>
       </field>
       <field>
-        <name>Deletion of part of chromosome 9</name>
-        <value>Deletion of part of chromosome 9</value>
-        <norm>FLOW-condition_status_source_value</norm>
+        <name>MRD</name>
+        <value>MRD</value>
+        <norm>FLOW-vlaue_as_number</norm>
       </field>
       <field>
-        <name>Trisomy 8</name>
-        <value>Trisomy 8</value>
-        <norm>FLOW-condition_status_source_value</norm>
+        <name>Minimal residual disease</name>
+        <value>Minimal residual disease</value>
+        <norm>FLOW-vlaue_as_number</norm>
       </field>
     </fields>
     <attributes/>
@@ -1718,13 +1747,121 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>608</xloc>
-      <yloc>48</yloc>
+      <xloc>416</xloc>
+      <yloc>224</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Select values - CONDITION_OCCURRENCE</name>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <name>Patient_id</name>
+      </field>
+      <field>
+        <name>FLOW-observation_source_value</name>
+      </field>
+      <field>
+        <name>FLOW-vlaue_as_number</name>
+      </field>
+      <field>
+        <name>FLOW-unit_source_value</name>
+      </field>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>Patient_id</name>
+        <rename>Patient_id</rename>
+        <type>String</type>
+        <length>6</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-observation_source_value</name>
+        <rename>FLOW-observation_source_value</rename>
+        <type>String</type>
+        <length>13</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-vlaue_as_number</name>
+        <rename>FLOW-vlaue_as_number</rename>
+        <type>BigNumber</type>
+        <length>15</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-unit_source_value</name>
+        <rename>FLOW-unit_source_value</rename>
+        <type>String</type>
+        <length>2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>944</xloc>
+      <yloc>224</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Select values - observation</name>
     <type>SelectValues</type>
     <description/>
     <distribute>N</distribute>
@@ -1737,25 +1874,88 @@
     <fields>
       <field>
         <name>USI</name>
-        <rename/>
       </field>
       <field>
-        <name>del5q</name>
-        <rename/>
+        <name>MRD_%_at_end_of_course_1</name>
       </field>
       <field>
-        <name>del7q</name>
-        <rename/>
+        <name>MRD_%_at_end_of_course_2</name>
       </field>
       <field>
-        <name>del9q</name>
-        <rename/>
+        <name>OS_time_(days)</name>
       </field>
       <field>
-        <name>trisomy_8</name>
-        <rename/>
+        <name>EFS_time_(days)</name>
       </field>
       <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>MRD_%_at_end_of_course_1</name>
+        <rename>MRD</rename>
+        <type>String</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>MRD_%_at_end_of_course_2</name>
+        <rename>Minimal residual disease</rename>
+        <type>String</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>OS_time_(days)</name>
+        <rename>Survival time</rename>
+        <type>String</type>
+        <length>15</length>
+        <precision>-2</precision>
+        <conversion_mask>0.00</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>EFS_time_(days)</name>
+        <rename>Time of event</rename>
+        <type>String</type>
+        <length>15</length>
+        <precision>-2</precision>
+        <conversion_mask>0.00</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
       <meta>
         <name>USI</name>
         <rename>Patient_id</rename>
@@ -1773,74 +1973,6 @@
         <currency_symbol/>
         <storage_type/>
       </meta>
-      <meta>
-        <name>del5q</name>
-        <rename>Deletion of part of long arm of chromosome 5</rename>
-        <type>String</type>
-        <length>-2</length>
-        <precision>-2</precision>
-        <conversion_mask/>
-        <date_format_lenient>false</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
-        <lenient_string_to_number>false</lenient_string_to_number>
-        <encoding/>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <storage_type/>
-      </meta>
-      <meta>
-        <name>del7q</name>
-        <rename>Deletion of part of chromosome 7</rename>
-        <type>String</type>
-        <length>-2</length>
-        <precision>-2</precision>
-        <conversion_mask/>
-        <date_format_lenient>false</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
-        <lenient_string_to_number>false</lenient_string_to_number>
-        <encoding/>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <storage_type/>
-      </meta>
-      <meta>
-        <name>del9q</name>
-        <rename>Deletion of part of chromosome 9</rename>
-        <type>String</type>
-        <length>-2</length>
-        <precision>-2</precision>
-        <conversion_mask/>
-        <date_format_lenient>false</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
-        <lenient_string_to_number>false</lenient_string_to_number>
-        <encoding/>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <storage_type/>
-      </meta>
-      <meta>
-        <name>trisomy_8</name>
-        <rename>Trisomy 8</rename>
-        <type>String</type>
-        <length>-2</length>
-        <precision>-2</precision>
-        <conversion_mask/>
-        <date_format_lenient>false</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
-        <lenient_string_to_number>false</lenient_string_to_number>
-        <encoding/>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <storage_type/>
-      </meta>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -1851,8 +1983,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>288</xloc>
-      <yloc>48</yloc>
+      <xloc>256</xloc>
+      <yloc>224</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1869,34 +2001,166 @@
     </partitioning>
     <fields>
       <field>
-        <name>FLOW-person_id</name>
-        <rename/>
+        <name>person_id</name>
       </field>
       <field>
-        <name>FLOW-condition_concept_id</name>
-        <rename/>
+        <name>FLOW-observation_concept_id</name>
       </field>
       <field>
-        <name>FLOW-condition_start_date</name>
-        <rename/>
+        <name>FLOW-observation_date</name>
       </field>
       <field>
-        <name>FLOW-condition_type_concept_id</name>
-        <rename/>
+        <name>FLOW-observation_type_concept_id</name>
       </field>
       <field>
-        <name>FLOW-condition_status_source_value</name>
-        <rename/>
+        <name>FLOW-vlaue_as_number</name>
       </field>
       <field>
-        <name>FLOW-condition_source_value</name>
-        <rename/>
+        <name>FLOW-unit_concept_id</name>
       </field>
       <field>
-        <name>FLOW-condition_status_concept_id</name>
-        <rename/>
+        <name>FLOW-observation_source_value</name>
+      </field>
+      <field>
+        <name>FLOW-unit_source_value</name>
       </field>
       <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>person_id</name>
+        <rename>person_id</rename>
+        <type>Integer</type>
+        <length>9</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-observation_concept_id</name>
+        <rename>FLOW-observation_concept_id</rename>
+        <type>Integer</type>
+        <length>9</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-observation_date</name>
+        <rename>FLOW-observation_date</rename>
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-observation_type_concept_id</name>
+        <rename>FLOW-observation_type_concept_id</rename>
+        <type>Integer</type>
+        <length>-2</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-vlaue_as_number</name>
+        <rename>FLOW-vlaue_as_number</rename>
+        <type>Number</type>
+        <length>15</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-unit_source_value</name>
+        <rename>FLOW-unit_source_value</rename>
+        <type>String</type>
+        <length>2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-observation_source_value</name>
+        <rename>FLOW-observation_source_value</rename>
+        <type>String</type>
+        <length>13</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+      <meta>
+        <name>FLOW-unit_concept_id</name>
+        <rename>FLOW-unit_concept_id</rename>
+        <type>Integer</type>
+        <length>9</length>
+        <precision>0</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -1907,13 +2171,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>848</xloc>
-      <yloc>864</yloc>
+      <xloc>816</xloc>
+      <yloc>768</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Stream lookup - FLOW-condition_concept_id</name>
+    <name>Stream lookup - FLOW-observation_concept_id</name>
     <type>StreamLookup</type>
     <description/>
     <distribute>Y</distribute>
@@ -1923,19 +2187,19 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from>Table input - FLOW-condition_concept_id</from>
+    <from>Table input - FLOW-observation_concept_id</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>Y</preserve_memory>
     <sorted_list>Y</sorted_list>
     <integer_pair>N</integer_pair>
     <lookup>
       <key>
-        <name>FLOW-condition_source_value</name>
+        <name>FLOW-observation_source_value</name>
         <field>concept_name</field>
       </key>
       <value>
         <name>concept_id</name>
-        <rename>FLOW-condition_concept_id</rename>
+        <rename>FLOW-observation_concept_id</rename>
         <default/>
         <type>Integer</type>
       </value>
@@ -1949,13 +2213,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>608</xloc>
-      <yloc>480</yloc>
+      <xloc>576</xloc>
+      <yloc>432</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Stream lookup - FLOW-condition_status_concept_id</name>
+    <name>Stream lookup - FLOW-unit_concept_id</name>
     <type>StreamLookup</type>
     <description/>
     <distribute>Y</distribute>
@@ -1965,21 +2229,21 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from>Table input - FLOW-condition_status_concept_id</from>
+    <from>Table input - FLOW-unit_concept_id</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>Y</preserve_memory>
-    <sorted_list>Y</sorted_list>
+    <sorted_list>N</sorted_list>
     <integer_pair>N</integer_pair>
     <lookup>
       <key>
-        <name>FLOW-condition_status_source_value</name>
+        <name>FLOW-unit_source_value</name>
         <field>concept_name</field>
       </key>
       <value>
         <name>concept_id</name>
-        <rename>FLOW-condition_status_concept_id</rename>
+        <rename>FLOW-unit_concept_id</rename>
         <default/>
-        <type>Integer</type>
+        <type>None</type>
       </value>
     </lookup>
     <attributes/>
@@ -1991,8 +2255,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>608</xloc>
-      <yloc>336</yloc>
+      <xloc>576</xloc>
+      <yloc>528</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -2019,7 +2283,7 @@
       </key>
       <value>
         <name>person_id</name>
-        <rename>FLOW-person_id</rename>
+        <rename>person_id</rename>
         <default/>
         <type>Integer</type>
       </value>
@@ -2033,13 +2297,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>608</xloc>
+      <xloc>576</xloc>
       <yloc>640</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Table input - FLOW-condition_concept_id</name>
+    <name>Table input - FLOW-observation_concept_id</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -2050,7 +2314,7 @@
       <schema_name/>
     </partitioning>
     <connection>ohdsi</connection>
-    <sql>SELECT * FROM cds_cdm.concept WHERE vocabulary_id = 'SNOMED' OR vocabulary_id = 'DRG' AND standard_concept = 'S' </sql>
+    <sql>SELECT * FROM cds_cdm.concept WHERE (vocabulary_id = 'SNOMED' OR vocabulary_id = 'Cancer Modifier' or vocabulary_id = 'HemOnc') AND standard_concept = 'S' </sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -2064,7 +2328,7 @@
         <name>concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
@@ -2087,7 +2351,7 @@
         <name>concept_name</name>
         <length>255</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>concept_name</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2110,7 +2374,7 @@
         <name>domain_id</name>
         <length>20</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>domain_id</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2133,7 +2397,7 @@
         <name>vocabulary_id</name>
         <length>20</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>vocabulary_id</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2156,7 +2420,7 @@
         <name>concept_class_id</name>
         <length>20</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>concept_class_id</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2179,7 +2443,7 @@
         <name>standard_concept</name>
         <length>1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>standard_concept</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2202,7 +2466,7 @@
         <name>concept_code</name>
         <length>50</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>concept_code</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2225,7 +2489,7 @@
         <name>valid_start_date</name>
         <length>-1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>valid_start_date</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2248,7 +2512,7 @@
         <name>valid_end_date</name>
         <length>-1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>valid_end_date</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2271,7 +2535,7 @@
         <name>invalid_reason</name>
         <length>1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_concept_id</origin>
+        <origin>Table input - FLOW-observation_concept_id</origin>
         <comments>invalid_reason</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
@@ -2299,12 +2563,12 @@
     </remotesteps>
     <GUI>
       <xloc>224</xloc>
-      <yloc>480</yloc>
+      <yloc>432</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Table input - FLOW-condition_status_concept_id</name>
+    <name>Table input - FLOW-unit_concept_id</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -2315,7 +2579,7 @@
       <schema_name/>
     </partitioning>
     <connection>ohdsi</connection>
-    <sql>SELECT * FROM cds_cdm.concept WHERE vocabulary_id = 'SNOMED' OR vocabulary_id = 'LOINC' AND standard_concept = 'S' </sql>
+    <sql>SELECT * FROM cds_cdm.concept WHERE vocabulary_id = 'UCUM' AND standard_concept = 'S' </sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -2329,11 +2593,11 @@
         <name>concept_id</name>
         <length>9</length>
         <precision>0</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>concept_id</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2352,11 +2616,11 @@
         <name>concept_name</name>
         <length>255</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>concept_name</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2375,11 +2639,11 @@
         <name>domain_id</name>
         <length>20</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>domain_id</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2398,11 +2662,11 @@
         <name>vocabulary_id</name>
         <length>20</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>vocabulary_id</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2421,11 +2685,11 @@
         <name>concept_class_id</name>
         <length>20</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>concept_class_id</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2444,11 +2708,11 @@
         <name>standard_concept</name>
         <length>1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>standard_concept</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2467,11 +2731,11 @@
         <name>concept_code</name>
         <length>50</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>concept_code</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2490,11 +2754,11 @@
         <name>valid_start_date</name>
         <length>-1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>valid_start_date</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2513,11 +2777,11 @@
         <name>valid_end_date</name>
         <length>-1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>valid_end_date</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2536,11 +2800,11 @@
         <name>invalid_reason</name>
         <length>1</length>
         <precision>-1</precision>
-        <origin>Table input - FLOW-condition_status_concept_id 2</origin>
+        <origin>Table input - FLOW-unit_concept_id</origin>
         <comments>invalid_reason</comments>
         <conversion_Mask/>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
+        <decimal_symbol>,</decimal_symbol>
+        <grouping_symbol>.</grouping_symbol>
         <currency_symbol/>
         <trim_type>none</trim_type>
         <case_insensitive>N</case_insensitive>
@@ -2564,7 +2828,7 @@
     </remotesteps>
     <GUI>
       <xloc>224</xloc>
-      <yloc>336</yloc>
+      <yloc>528</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -2580,7 +2844,7 @@
       <schema_name/>
     </partitioning>
     <connection>ohdsi</connection>
-    <sql>SELECT * FROM cds_cdm.person </sql>
+    <sql>SELECT * FROM cds_cdm.person</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -3018,6 +3282,52 @@
     </GUI>
   </step>
   <step>
+    <name>Value mapper - FLOW-unit_source_value</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <field_to_use>FLOW-observation_source_value</field_to_use>
+    <target_field>FLOW-unit_source_value</target_field>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>Survival time</source_value>
+        <target_value>day</target_value>
+      </field>
+      <field>
+        <source_value>Time of event</source_value>
+        <target_value>day</target_value>
+      </field>
+      <field>
+        <source_value>MRD</source_value>
+        <target_value>percent</target_value>
+      </field>
+      <field>
+        <source_value>Minimal residual disease</source_value>
+        <target_value>percent</target_value>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>768</xloc>
+      <yloc>224</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
     <name>Write to OMOP</name>
     <type>TableOutput</type>
     <description/>
@@ -3030,7 +3340,7 @@
     </partitioning>
     <connection>ohdsi</connection>
     <schema>cds_cdm</schema>
-    <table>condition_occurrence</table>
+    <table>observation</table>
     <commit>2000</commit>
     <truncate>Y</truncate>
     <ignore_errors>N</ignore_errors>
@@ -3048,31 +3358,35 @@
     <fields>
       <field>
         <column_name>person_id</column_name>
-        <stream_name>FLOW-person_id</stream_name>
+        <stream_name>person_id</stream_name>
       </field>
       <field>
-        <column_name>condition_concept_id</column_name>
-        <stream_name>FLOW-condition_concept_id</stream_name>
+        <column_name>observation_concept_id</column_name>
+        <stream_name>FLOW-observation_concept_id</stream_name>
       </field>
       <field>
-        <column_name>condition_start_date</column_name>
-        <stream_name>FLOW-condition_start_date</stream_name>
+        <column_name>observation_date</column_name>
+        <stream_name>FLOW-observation_date</stream_name>
       </field>
       <field>
-        <column_name>condition_type_concept_id</column_name>
-        <stream_name>FLOW-condition_type_concept_id</stream_name>
+        <column_name>observation_type_concept_id</column_name>
+        <stream_name>FLOW-observation_type_concept_id</stream_name>
       </field>
       <field>
-        <column_name>condition_status_source_value</column_name>
-        <stream_name>FLOW-condition_status_source_value</stream_name>
+        <column_name>value_as_number</column_name>
+        <stream_name>FLOW-vlaue_as_number</stream_name>
       </field>
       <field>
-        <column_name>condition_source_value</column_name>
-        <stream_name>FLOW-condition_source_value</stream_name>
+        <column_name>unit_concept_id</column_name>
+        <stream_name>FLOW-unit_concept_id</stream_name>
       </field>
       <field>
-        <column_name>condition_status_concept_id</column_name>
-        <stream_name>FLOW-condition_status_concept_id</stream_name>
+        <column_name>observation_source_value</column_name>
+        <stream_name>FLOW-observation_source_value</stream_name>
+      </field>
+      <field>
+        <column_name>unit_source_value</column_name>
+        <stream_name>FLOW-unit_source_value</stream_name>
       </field>
     </fields>
     <attributes/>
@@ -3084,13 +3398,48 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1184</xloc>
-      <yloc>864</yloc>
+      <xloc>1024</xloc>
+      <yloc>768</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Write to log - Person_id</name>
+    <name>Write to log 2</name>
+    <type>WriteToLog</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <loglevel>log_level_basic</loglevel>
+    <displayHeader>Y</displayHeader>
+    <limitRows>N</limitRows>
+    <limitRowsNumber>0</limitRowsNumber>
+    <logmessage>Concept id was not found. </logmessage>
+    <fields>
+      <field>
+        <name>FLOW-observation_source_value</name>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>944</xloc>
+      <yloc>432</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Write to log 3</name>
     <type>WriteToLog</type>
     <description/>
     <distribute>Y</distribute>
@@ -3119,78 +3468,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1168</xloc>
-      <yloc>736</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Write to log - condition_concept_id</name>
-    <type>WriteToLog</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <loglevel>log_level_basic</loglevel>
-    <displayHeader>Y</displayHeader>
-    <limitRows>N</limitRows>
-    <limitRowsNumber>0</limitRowsNumber>
-    <logmessage>Concept id was not found. </logmessage>
-    <fields>
-      <field>
-        <name>FLOW-condition_source_value</name>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>1168</xloc>
-      <yloc>576</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Write to log - condition_status_concept_id</name>
-    <type>WriteToLog</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <loglevel>log_level_basic</loglevel>
-    <displayHeader>Y</displayHeader>
-    <limitRows>N</limitRows>
-    <limitRowsNumber>0</limitRowsNumber>
-    <logmessage>Concept id was not found. </logmessage>
-    <fields>
-      <field>
-        <name>FLOW-condition_status_source_value</name>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>1168</xloc>
-      <yloc>400</yloc>
+      <xloc>944</xloc>
+      <yloc>640</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

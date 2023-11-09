@@ -438,13 +438,13 @@
   </notepads>
   <connection>
     <name>AML_OMOP</name>
-    <server>sv-diz-aml.med.tu-dresden.de</server>
+    <server>${DATABASE_IP}</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>ohdsi</database>
-    <port>5432</port>
-    <username>ohdsi_admin_user</username>
-    <password>Encrypted 446b6e465176565072666a4a35708da9e1b85a93a882aa108c518f8581eb</password>
+    <database>${DATABASE_NAME}</database>
+    <port>${DATABASE_PORT}</port>
+    <username>${DATABASE_USER}</username>
+    <password>${DATABASE_PASSWORD}</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -463,7 +463,7 @@
       </attribute>
       <attribute>
         <code>PORT_NUMBER</code>
-        <attribute>5432</attribute>
+        <attribute>${DATABASE_PORT}</attribute>
       </attribute>
       <attribute>
         <code>PRESERVE_RESERVED_WORD_CASE</code>
@@ -623,8 +623,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>176</yloc>
+      <xloc>752</xloc>
+      <yloc>336</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -803,8 +803,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1184</xloc>
-      <yloc>368</yloc>
+      <xloc>768</xloc>
+      <yloc>416</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -838,8 +838,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1184</xloc>
-      <yloc>544</yloc>
+      <xloc>768</xloc>
+      <yloc>576</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -882,7 +882,7 @@
     <length>Characters</length>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>/Users/ahmadinai/Desktop/AML/Dresden Study Alliance Leukemia AML(111 elements).csv</name>
+      <name>${User/Transfrmations-folder/}Dataset-A</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -2651,8 +2651,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>928</xloc>
-      <yloc>112</yloc>
+      <xloc>1040</xloc>
+      <yloc>80</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -2891,8 +2891,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1184</xloc>
-      <yloc>656</yloc>
+      <xloc>768</xloc>
+      <yloc>688</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -2975,8 +2975,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>880</xloc>
-      <yloc>336</yloc>
+      <xloc>464</xloc>
+      <yloc>368</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -3017,8 +3017,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>880</xloc>
-      <yloc>432</yloc>
+      <xloc>464</xloc>
+      <yloc>464</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -3059,8 +3059,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>880</xloc>
-      <yloc>544</yloc>
+      <xloc>464</xloc>
+      <yloc>576</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -3508,8 +3508,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>544</yloc>
+      <xloc>112</xloc>
+      <yloc>576</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -3773,8 +3773,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>336</yloc>
+      <xloc>112</xloc>
+      <yloc>368</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4038,8 +4038,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>432</yloc>
+      <xloc>112</xloc>
+      <yloc>464</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4092,8 +4092,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1120</xloc>
-      <yloc>80</yloc>
+      <xloc>1040</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4142,8 +4142,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>80</yloc>
+      <xloc>992</xloc>
+      <yloc>320</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4252,8 +4252,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>640</yloc>
+      <xloc>992</xloc>
+      <yloc>688</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4287,8 +4287,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>384</yloc>
+      <xloc>992</xloc>
+      <yloc>416</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -4322,8 +4322,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1408</xloc>
-      <yloc>544</yloc>
+      <xloc>992</xloc>
+      <yloc>576</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
