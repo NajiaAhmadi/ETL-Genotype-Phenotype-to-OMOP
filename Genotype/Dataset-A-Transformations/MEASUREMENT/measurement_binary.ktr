@@ -1252,7 +1252,12 @@
     <length>Characters</length>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>${User/Transfrmations-folder/}Dataset-A</name>
+      <name>${User/Transfrmations-folder/}Dataset-A.csv</name>
+      <filemask/>
+      <exclude_filemask/>
+      <file_required>N</file_required>
+      <include_subfolders>N</include_subfolders>
+      <name/>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
