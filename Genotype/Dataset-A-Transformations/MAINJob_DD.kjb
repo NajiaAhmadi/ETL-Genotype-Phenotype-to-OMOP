@@ -645,7 +645,7 @@ TRUNCATE cds_cdm.source_to_concept_map CASCADE;
       <to>SQL_truncate_OMOP</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
       <evaluation>Y</evaluation>
       <unconditional>Y</unconditional>
     </hop>
@@ -654,7 +654,7 @@ TRUNCATE cds_cdm.source_to_concept_map CASCADE;
       <to>FILL-SOURCE_TO_CONCEPT_MAP</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
       <evaluation>Y</evaluation>
       <unconditional>N</unconditional>
     </hop>
@@ -663,9 +663,18 @@ TRUNCATE cds_cdm.source_to_concept_map CASCADE;
       <to>Transformation-PERSON</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
       <evaluation>Y</evaluation>
       <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Start</from>
+      <to>Transformation-PERSON</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
     </hop>
   </hops>
   <notepads>

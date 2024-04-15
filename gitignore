@@ -1,5 +1,0 @@
-# Sensitive files
-output/*.csv
-input/data/*.csv
-
-

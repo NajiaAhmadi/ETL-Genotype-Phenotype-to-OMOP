@@ -394,17 +394,17 @@ TRUNCATE cds_cdm.source_to_concept_map CASCADE;
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>224</xloc>
-      <yloc>64</yloc>
+      <yloc>176</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
-      <name>Dresden_MAINjob</name>
+      <name>Dataset-A_MAINjob</name>
       <description/>
       <type>JOB</type>
       <attributes/>
       <specification_method>filename</specification_method>
       <job_object_id/>
-      <filename>${Internal.Entry.Current.Directory}/Dresden-Transformations/MAINJob_DD.kjb</filename>
+      <filename>${Internal.Entry.Current.Directory}/Genotype/Dataset-A-Transformations/MAINJob_DD.kjb</filename>
       <jobname/>
       <directory/>
       <arg_from_previous>N</arg_from_previous>
@@ -468,7 +468,7 @@ TRUNCATE cds_cdm.source_to_concept_map CASCADE;
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>432</xloc>
-      <yloc>64</yloc>
+      <yloc>176</yloc>
       <attributes_kjc/>
     </entry>
   </entries>
@@ -478,7 +478,7 @@ TRUNCATE cds_cdm.source_to_concept_map CASCADE;
       <to>SQL_truncate_OMOP</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
       <evaluation>Y</evaluation>
       <unconditional>Y</unconditional>
     </hop>
@@ -487,27 +487,36 @@ TRUNCATE cds_cdm.source_to_concept_map CASCADE;
       <to>FILL-SOURCE_TO_CONCEPT_MAP</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
       <evaluation>Y</evaluation>
       <unconditional>N</unconditional>
     </hop>
     <hop>
       <from>FILL-SOURCE_TO_CONCEPT_MAP</from>
-      <to>Dresden_MAINjob</to>
+      <to>Dataset-A_MAINjob</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
       <evaluation>Y</evaluation>
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>Dresden_MAINjob</from>
+      <from>Dataset-A_MAINjob</from>
       <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
       <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Start</from>
+      <to>Dataset-A_MAINjob</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
     </hop>
   </hops>
   <notepads>
