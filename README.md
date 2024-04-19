@@ -27,17 +27,26 @@ This Transformation processes fill the SOURCE_TO_CONCEPT_MAP table with a set of
 
 Here, we outline how to adapt the RD-CDM for use across various data and medical fields for rare diseases.
 
-1. Use Case Definition: Specify the modules required to explore the research hypothesis. Identify key elements within these modules that address the research question.
+## 1. Use Case Definition 
 
-2. Stakeholder Engagement: Communicate the necessary modules and elements with medical experts to assess their availability at each study site. Engage with data providers to ensure data can be 
+Specify the modules required to explore the research hypothesis. Identify key elements within these modules that address the research question.
+
+## 2. Stakeholder Engagement 
+
+Communicate the necessary modules and elements with medical experts to assess their availability at each study site. Engage with data providers to ensure data can be 
 automatically retrieved, possibly in standard formats like FHIR, or using terminologies such as SNOMED. Consult legal authorities to address the sensitive nature of medical data, ensuring adherence to ethical standards, data security, and privacy protection.
 
-3. Diagnostic Entity Compilation: Collaborate with stakeholders to finalize a comprehensive or selective list of data elements after initial discussions.
+## 3. Diagnostic Entity Compilation
+Collaborate with stakeholders to finalize a comprehensive or selective list of data elements after initial discussions.
 
-4. Mapping Use Case-Specific Entities: Align individual data items with the RD-CDM's modules to standardize data across all study sites.
+## 4. Mapping Use Case-Specific Entities
+Align individual data items with the RD-CDM's modules to standardize data across all study sites.
 
-5. Data Transformation: Implement ETL processes, for instance, converting FHIR to OMOP format, to standardize data in modules like "Person", "Diagnosis", "Laboratory findings", "Procedure", and "Medications".
+## 5. Data Transformation
+Implement ETL processes, for instance, converting FHIR to OMOP format, to standardize data in modules like "Person", "Diagnosis", "Laboratory findings", "Procedure", and "Medications".
 
-6. Handling Genotypic and Phenotypic Data: Use direct ETL processes from CSV to OMOP CDM for the "Genotype" and "Phenotype" modules.
+## 6. Handling Genotypic and Phenotypic Data
+
+Use direct ETL processes from CSV to OMOP CDM for the "Genotype" and "Phenotype" modules.
 
 
